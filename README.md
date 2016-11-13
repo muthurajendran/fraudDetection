@@ -26,7 +26,7 @@ For this reason, User A and User B should be able to pay each other without trig
 
 <img src="./images/friend-of-a-friend1.png" width="500">
 
-To account for this, PayMo would like you to also implement this feature. When users make a payment, they'll be notified of when they're not "a friend of a friend".
+To account for this, PayMo would like you to also implement this feature. When users make a payment, they'll be notified when the other user is outside of their "2nd-degree network".
 
 * "unverified: This user is not a friend or a "friend of a friend". Are you sure you would like to proceed with this payment?"
 
@@ -73,15 +73,15 @@ Ideally, payment data would come from a real-time, streaming API, but we don't w
 
 As a result, you may assume that collecting the payments has been done for you and the data resides in two comma-delimited files in the `paymo_input` directory. 
 
-The first file, `batch_payment.csv`, contains past data that can be used to track users who have previously paid one another. These transactions should be used to build the initial state of the entire user network.
+The first file, `batch_payment.txt`, contains past data that can be used to track users who have previously paid one another. These transactions should be used to build the initial state of the entire user network.
 
-Data in the second file, `stream_payment.csv` should be used to determine whether there's a possibility of fraud and a warning should be triggered.
+Data in the second file, `stream_payment.txt` should be used to determine whether there's a possibility of fraud and a warning should be triggered.
 
-You should assume that each new line of `stream_payment.csv` corresponds to a new, valid PayMo payment record - regardless of being suspicious - and design your program to handle a text file with a large number of payments. 
+You should assume that each new line of `stream_payment.txt` corresponds to a new, valid PayMo payment record -- regardless of being 'unverified' -- and design your program to handle a text file with a large number of payments. 
 
 ###Output
 
-Your code should process each line in `stream_payment.csv` and for each payment, output a line containing one of two words, `trusted` or `unverified`. 
+Your code should process each line in `stream_payment.txt` and for each payment, output a line containing one of two words, `trusted` or `unverified`. 
 
 `trusted` means the two users involved in the transaction have previously paid one another (when implementing Feature 1) or are part of the "friends network" (when implementing Feature 2 and 3).
 
@@ -91,7 +91,7 @@ The output should be written to a text file in the `paymo_output` directory. Bec
 
 Each output file should be named after the applicable feature you implemented (i.e., `output1.txt`, `output2.txt` and `output3.txt`)
 
-For example, if there were 5 lines of transactions in the `stream_payment.csv`, then the following `output1.txt` file for Feature 1 could look like this: 
+For example, if there were 5 lines of transactions in the `stream_payment.txt`, then the following `output1.txt` file for Feature 1 could look like this: 
 
 	trusted
 	trusted
@@ -104,7 +104,7 @@ For example, if there were 5 lines of transactions in the `stream_payment.csv`, 
 
 [Back to Table of Contents] (README.md#table-of-contents)
 
-The `batch_payment.csv` and `stream_payment.csv` input files are formatted the same way.
+The `batch_payment.txt` and `stream_payment.txt` input files are formatted the same way.
 
 As you would expect of comma-separated-value files, the first line is the header. It contains the names of all of the fields in the payment record. In this case, the fields are 
 
@@ -116,7 +116,7 @@ As you would expect of comma-separated-value files, the first line is the header
 
 Following the header, you can assume each new line contains a single new PayMo payment record with each field delimited by a comma. In some cases, the field can contain Unicode as PayMo users are fond of placing emojis in their messages. For simplicity's sake, you can choose to ignore those emojis.
 
-For example, the first 10 lines (including the header) of `batch_payment.csv` or `stream_payment.csv` could look like: 
+For example, the first 10 lines (including the header) of `batch_payment.txt` or `stream_payment.txt` could look like: 
 
 	time, id1, id2, amount, message
 	2016-11-02 09:49:29, 52575, 1120, 25.32, Spam
@@ -153,8 +153,8 @@ Example Repo Structure
 	├── src
 	│  	└── antifraud.java
 	├── paymo_input
-	│   └── batch_payment.csv
-	|   └── stream_payment.csv
+	│   └── batch_payment.txt
+	|   └── stream_payment.txt
 	├── paymo_output
 	│   └── output1.txt
 	|   └── output2.txt
@@ -164,16 +164,16 @@ Example Repo Structure
 		   └── tests
 	        	└── test-1-paymo-trans
         		│   ├── paymo_input
-        		│   │   └── batch_payment.csv
-        		│   │   └── stream_payment.csv
+        		│   │   └── batch_payment.txt
+        		│   │   └── stream_payment.txt
         		│   └── paymo_output
         		│       └── output1.txt
         		│       └── output2.txt
         		│       └── output3.txt
         		└── your-own-test
             		 ├── paymo_input
-        		     │   └── batch_payment.csv
-        		     │   └── stream_payment.csv
+        		     │   └── batch_payment.txt
+        		     │   └── stream_payment.txt
         		     └── paymo_output
         		         └── output1.txt
         		         └── output2.txt
@@ -186,7 +186,7 @@ The contents of `src` do not have to contain the single file called `"antifraud.
 
 To make sure that your code has the correct directory structure and the format of the output data in `output1.txt`, `output2.txt` and `output3.txt` is correct, we included a test script, called `run_tests.sh` in the `insight_testsuite` folder.
 
-The tests are stored simply as text files under the `insight_testsuite/tests` folder. Each test should have a separate folder and each should contain a `paymo_input` folder -- where `batch_payment.csv` and `stream_payment.csv` files can be found. There also should be a `paymo_output` folder where `output1.txt`, `output2.txt` and `output3.txt` should reside.
+The tests are stored simply as text files under the `insight_testsuite/tests` folder. Each test should have a separate folder and each should contain a `paymo_input` folder -- where `batch_payment.txt` and `stream_payment.txt` files can be found. There also should be a `paymo_output` folder where `output1.txt`, `output2.txt` and `output3.txt` should reside.
 
 From the `insight_testsuite` folder, you can run the test with the following command:
 
@@ -236,6 +236,9 @@ While you're welcome to do so, your code will be tested on a single machine so t
 
 * *What sort of system should I use to run my program on (Windows, Linux, Mac)?*  
 You may write your solution on any system, but your source code should be portable and work on all systems. Additionally, your `run.sh` must be able to run on either Unix or Linux, as that's the system that will be used for testing. Linux machines are the industry standard for most data engineering teams, so it is helpful to be familiar with this. If you're currently using Windows, we recommend using tools like Cygwin or Docker, or a free online IDE such as [Cloud9](http://c9.io).  
+
+* *How to handle invalid lines?*  
+Firstly it should be noted that the input files are formatted as per Unix/Linux standards where newlines are dictated by a newline character ('\n'). If you are running your code on Windows or specifically detecting for carriage return ('\r') make sure that you update your code to use the correct line delimiter otherwise you may be virtually creating invalid lines. If you are confident this is not the cause of your invalid lines, please let us know at cc@insightdataengineering.com.
   
 * *Can I use pre-built packages, modules, or libraries?*   
 This coding challenge can be completed without any "exotic" packages. While you may use publicly available packages, modules, or libraries, you must document any dependencies in your accompanying `README` file. When we review your submission, we will download these libraries and attempt to run your program. If you do use a package, you should always ensure that the module you're using works efficiently for the specific use-case in the challenge, since many libraries are not designed for large amounts of data.
@@ -249,8 +252,8 @@ Unfortunately, we receive hundreds of submissions in a very short time and are u
 * *Do I need to use multi-threading?*   
 No, your solution doesn't necessarily need to include multi-threading - there are many solutions that don't require multiple threads/cores or any distributed systems, but instead use efficient data structures.  
 
-* *Do I need to account for an updating `stream_payment.csv` file?*   
-No, your solution doesn't have to re-process `stream_payment.csv` as if it were updating in real-time. If you were doing this project as a data engineer in industry, you would probably connect to a RESTful API to get one transaction at a time, but this is beyond the scope of this challenge. Instead, you should imagine that each line corresponds to a new sequential transaction. 
+* *Do I need to account for an updating `stream_payment.txt` file?*   
+No, your solution doesn't have to re-process `stream_payment.txt` multiple times. If you were doing this project as a data engineer in industry, you would probably connect to a RESTful API to get one transaction at a time, but this is beyond the scope of this challenge. Instead, you should imagine that each line corresponds to a new sequential transaction. 
 
 * *What should the format of the output be?*  
 In order to be tested correctly, you must use the format described above. You can ensure that you have the correct format by using the testing suite we've included. If you are still unable to get the correct format from the debugging messages in the suite, please email us at cc@insightdataengineering.com.
