@@ -121,44 +121,49 @@ class AntiFraud(object):
     return
 
   """ Write to all the output files """
-  def __write_output(self, feature1_op_path, feature1_op, feature2_op_path, feature2_op, feature3_op_path, feature3_op):
-    with open(feature1_op_path, 'a') as output1_file:
-      output1_file.write('\n'.join(feature1_op))
-      output1_file.write('\n')
-    with open(feature2_op_path, 'a') as output2_file:
-      output2_file.write('\n'.join(feature2_op))
-      output2_file.write('\n')
-    with open(feature3_op_path, 'a') as output3_file:
-      output3_file.write('\n'.join(feature3_op))
-      output3_file.write('\n')
+  def __write_output(self, output1_file, feature1_op, output2_file, feature2_op, output3_file, feature3_op):
+    output1_file.write('\n'.join(feature1_op))
+    output1_file.write('\n')
+    output2_file.write('\n'.join(feature2_op))
+    output2_file.write('\n')
+    output3_file.write('\n'.join(feature3_op))
+    output3_file.write('\n')
 
   def build_features(self, input_path, feature1_op_path, feature2_op_path, feature3_op_path):
     feature1, feature2, feature3 = [], [], []
     count = 0
-    with open(input_path) as file:
-      next(file)
-      for line in file:
-        count += 1
-        content = line.split(',')
-        vertex1, vertex2 = content[1].strip(), content[2].strip()
-        # get feature 1
-        result = self.__build_feature1(vertex1, vertex2)
-        feature1.append(result)
-        path_distance = self.__network.bidirectional_bfs(str(vertex1), str(vertex2))
-        # get feature 2
-        result = self.__build_feature_with_distance(vertex1, vertex2, 2, path_distance)
-        feature2.append(result)
-        # get feature 3
-        result = self.__build_feature_with_distance(vertex1, vertex2, self.__maxDistance, path_distance)
-        feature3.append(result)
-        # write on batch of 20,000
-        if count % 20000 == 0:
-          print "writing.. Progress: ", count, ' trasactions'
-          self.__write_output(feature1_op_path, feature1, feature2_op_path, feature2, feature3_op_path, feature3)
-          feature1, feature2, feature3 = [], [], []
+    with open(feature1_op_path, 'w') as output1_file:
+      with open(feature2_op_path, 'w') as output2_file:
+        with open(feature3_op_path, 'w') as output3_file:
+          with open(input_path) as file:
+            next(file)
+            for line in file:
+              content = line.split(',')
+              try:
+                vertex1, vertex2 = content[1].strip(), content[2].strip()
+              except Exception:
+                print 'ignoring data as invalid', content
+              else:
+                count += 1
+                # get feature 1
+                result = self.__build_feature1(vertex1, vertex2)
+                feature1.append(result)
+                path_distance = self.__network.bidirectional_bfs(str(vertex1), str(vertex2))
+                # get feature 2
+                result = self.__build_feature_with_distance(vertex1, vertex2, 2, path_distance)
+                feature2.append(result)
+                # get feature 3
+                result = self.__build_feature_with_distance(vertex1, vertex2, self.__maxDistance, path_distance)
+                feature3.append(result)
+                # write on batch of 20,000
+                if count % 20000 == 0:
+                  print "writing.. Progress: ", count, ' trasactions'
+                  self.__write_output(output1_file, feature1, output2_file, feature2, output3_file, feature3)
+                  feature1, feature2, feature3 = [], [], []
 
-    # write final remaining features to output
-    self.__write_output(feature1_op_path, feature1, feature2_op_path, feature2, feature3_op_path, feature3)
+            # write final remaining features to output
+            self.__write_output(output1_file, feature1, output2_file, feature2, output3_file, feature3)
+            print "writing.. Progress: ", count, ' trasactions'
 
   def __build_feature_with_distance(self, vertex1, vertex2, distance, path_distance):
     if path_distance <= distance and path_distance >= 0:
@@ -194,8 +199,11 @@ if __name__ == "__main__":
     try:
         # max distance allowed for feature 3 to be trusted as argument
       fraud = AntiFraud(4)
+      print 'Building the network...'
       fraud.build_graph_from_txt(batch_input)
+      print 'Done. Started predicting fraud transactions...'
       fraud.build_features(stream_input, feature1_op, feature2_op, feature3_op)
+      print 'done..'
     except Exception as e:
       print 'Program error, contact developer'
-      raise 'program error'
+      raise e
