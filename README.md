@@ -1,6 +1,9 @@
-# Requirements to run
+## Requirements to run
 Environemnt - Python 2.7 
+
 Changes - Adding "batch_payment.txt" and "stream_payment.txt" into "../paymo_input/" dir running "../run.sh" - Output in "../paymo_output" 
+
+Found invalid data - https://github.com/muthurajendran/fraudDetection/blob/master/images/Invalid%20data.png
 
 # Table of Contents
 

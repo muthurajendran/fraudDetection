@@ -139,12 +139,15 @@ class AntiFraud(object):
             next(file)
             for line in file:
               content = line.split(',')
+              count += 1
               try:
                 vertex1, vertex2 = content[1].strip(), content[2].strip()
               except Exception:
                 print 'ignoring data as invalid', content
+                feature1.append('unverified')
+                feature2.append('unverified')
+                feature2.append('unverified')
               else:
-                count += 1
                 # get feature 1
                 result = self.__build_feature1(vertex1, vertex2)
                 feature1.append(result)
@@ -156,10 +159,10 @@ class AntiFraud(object):
                 result = self.__build_feature_with_distance(vertex1, vertex2, self.__maxDistance, path_distance)
                 feature3.append(result)
                 # write on batch of 20,000
-                if count % 20000 == 0:
-                  print "writing.. Progress: ", count, ' trasactions'
-                  self.__write_output(output1_file, feature1, output2_file, feature2, output3_file, feature3)
-                  feature1, feature2, feature3 = [], [], []
+              if count % 20000 == 0:
+                print "writing.. Progress: ", count, ' trasactions'
+                self.__write_output(output1_file, feature1, output2_file, feature2, output3_file, feature3)
+                feature1, feature2, feature3 = [], [], []
 
             # write final remaining features to output
             self.__write_output(output1_file, feature1, output2_file, feature2, output3_file, feature3)
