@@ -1,3 +1,7 @@
+# Requirements to run
+Environemnt - Python 2.7 
+Changes - Adding "batch_payment.txt" and "stream_payment.txt" into "../paymo_input/" dir running "../run.sh" - Output in "../paymo_output" 
+
 # Table of Contents
 
 1. [Challenge Summary] (README.md#challenge-summary)
