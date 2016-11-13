@@ -146,7 +146,7 @@ class AntiFraud(object):
                 print 'ignoring data as invalid', content
                 feature1.append('unverified')
                 feature2.append('unverified')
-                feature2.append('unverified')
+                feature3.append('unverified')
               else:
                 # get feature 1
                 result = self.__build_feature1(vertex1, vertex2)
